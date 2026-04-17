@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kingdom Personality Discovery</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --gold: #c9963a;
+    --gold-light: #f5e9d0;
+    --gold-dark: #8a621f;
+    --navy: #0f1e38;
+    --navy-mid: #1a3260;
+    --navy-light: #e8edf7;
+    --cream: #faf7f2;
+    --cream-dark: #f0eae0;
+    --text: #1a1a2e;
+    --text-mid: #4a4a6a;
+    --text-light: #7a7a9a;
+    --white: #ffffff;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--cream);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  .screen { display: none; min-height: 100vh; }
+  .screen.active { display: flex; flex-direction: column; }
+
+  /* ── HEADER BAR ── */
+  .topbar {
+    background: var(--navy);
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+  .topbar-logo { font-family: 'Cormorant Garamond', serif; color: var(--gold); font-size: 18px; font-weight: 600; letter-spacing: .04em; }
+  .topbar-sub { color: rgba(255,255,255,.45); font-size: 12px; margin-left: auto; }
+
+  /* ── WELCOME ── */
+  #welcome { background: var(--navy); }
+  .hero {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 24px 40px;
+    text-align: center;
+    max-width: 680px;
+    margin: 0 auto;
+    width: 100%;
+  }
+  .hero-symbol {
+    font-size: 52px;
+    margin-bottom: 24px;
+    animation: float 4s ease-in-out infinite;
+  }
+  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+
+  .hero h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(32px, 6vw, 52px);
+    font-weight: 600;
+    color: var(--white);
+    line-height: 1.2;
+    margin-bottom: 16px;
+  }
+  .hero h1 span { color: var(--gold); }
+  .hero p { color: rgba(255,255,255,.65); font-size: 16px; max-width: 520px; margin-bottom: 40px; line-height: 1.75; }
+
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    width: 100%;
+    max-width: 560px;
+    margin-bottom: 40px;
+  }
+  .feature-card {
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(201,150,58,.25);
+    border-radius: var(--radius);
+    padding: 18px 14px;
+    text-align: center;
+  }
+  .feature-card .icon { font-size: 24px; margin-bottom: 8px; }
+  .feature-card strong { display: block; color: var(--gold); font-size: 13px; font-weight: 500; margin-bottom: 4px; }
+  .feature-card span { color: rgba(255,255,255,.5); font-size: 12px; line-height: 1.4; }
+
+  .verse-strip {
+    background: rgba(201,150,58,.12);
+    border-left: 3px solid var(--gold);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    padding: 14px 18px;
+    max-width: 500px;
+    width: 100%;
+    margin-bottom: 40px;
+    font-style: italic;
+    color: rgba(255,255,255,.6);
+    font-size: 14px;
+    text-align: left;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 16px;
+  }
+
+  .btn-primary {
+    background: var(--gold);
+    color: var(--navy);
+    border: none;
+    border-radius: 99px;
+    padding: 16px 42px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: .02em;
+    transition: all .2s;
+  }
+  .btn-primary:hover { background: #daa94a; transform: translateY(-2px); box-shadow: 0 6px 24px rgba(201,150,58,.35); }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--text-mid);
+    border: 1px solid #d8d0c8;
+    border-radius: 99px;
+    padding: 12px 28px;
+    font-size: 14px;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    transition: all .2s;
+  }
+  .btn-secondary:hover { background: var(--cream-dark); }
+
+  /* ── QUESTIONS ── */
+  #questions { background: var(--cream); }
+  .q-wrap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    max-width: 640px;
+    margin: 0 auto;
+    width: 100%;
+    padding: 32px 20px 48px;
+  }
+  .progress-bar-wrap { margin-bottom: 32px; }
+  .progress-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .progress-meta span { font-size: 13px; color: var(--text-light); }
+  .progress-track { background: #e0d8ce; border-radius: 99px; height: 5px; }
+  .progress-fill { background: var(--gold); border-radius: 99px; height: 5px; transition: width .4s ease; }
+
+  .q-dim-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    color: var(--gold-dark);
+    margin-bottom: 12px;
+    font-weight: 500;
+  }
+  .q-card {
+    background: var(--white);
+    border: 1px solid rgba(0,0,0,.07);
+    border-radius: var(--radius);
+    padding: 28px;
+    margin-bottom: 28px;
+    box-shadow: 0 2px 16px rgba(0,0,0,.05);
+  }
+  .q-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    line-height: 1.5;
+    color: var(--navy);
+    font-weight: 500;
+  }
+
+  .options-grid { display: flex; flex-direction: column; gap: 10px; }
+  .opt-btn {
+    background: var(--white);
+    border: 1px solid rgba(0,0,0,.1);
+    border-radius: var(--radius-sm);
+    padding: 14px 18px;
+    text-align: left;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    color: var(--text-mid);
+    transition: all .15s;
+  }
+  .opt-btn:hover { border-color: var(--gold); background: var(--gold-light); color: var(--navy); }
+  .opt-num {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--cream-dark);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 500; flex-shrink: 0;
+    color: var(--text-mid);
+  }
+  .back-btn {
+    background: none; border: none; color: var(--text-light);
+    font-size: 13px; cursor: pointer; margin-top: 20px;
+    font-family: 'Inter', sans-serif; padding: 0;
+  }
+  .back-btn:hover { color: var(--text); }
+
+  /* ── RESULTS ── */
+  #results { background: var(--cream); }
+  .results-wrap {
+    flex: 1;
+    max-width: 700px;
+    margin: 0 auto;
+    width: 100%;
+    padding: 32px 20px 80px;
+  }
+
+  .profile-hero {
+    border-radius: var(--radius);
+    padding: 28px;
+    margin-bottom: 24px;
+    border-left: 4px solid;
+    position: relative;
+    overflow: hidden;
+  }
+  .profile-hero::before {
+    content: '';
+    position: absolute;
+    right: -20px; top: -20px;
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.15);
+  }
+  .profile-label { font-size: 11px; text-transform: uppercase; letter-spacing: .1em; margin-bottom: 6px; font-weight: 500; }
+  .profile-name { font-family: 'Cormorant Garamond', serif; font-size: 30px; font-weight: 600; margin-bottom: 10px; }
+  .profile-desc { font-size: 14px; line-height: 1.75; max-width: 560px; }
+  .profile-emoji { font-size: 48px; margin-bottom: 14px; display: block; }
+
+  .meta-chips { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 24px; }
+  .chip {
+    background: var(--white);
+    border: 1px solid rgba(0,0,0,.09);
+    border-radius: 99px;
+    padding: 7px 16px;
+    font-size: 13px;
+    color: var(--text-mid);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .chip strong { color: var(--navy); font-weight: 500; }
+
+  /* Tabs */
+  .tabs { display: flex; gap: 4px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 2px; }
+  .tab-btn {
+    background: transparent;
+    border: 1px solid rgba(0,0,0,.1);
+    border-radius: 99px;
+    padding: 8px 16px;
+    font-size: 13px;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    color: var(--text-light);
+    white-space: nowrap;
+    transition: all .15s;
+  }
+  .tab-btn.active { color: var(--white); border-color: transparent; }
+  .tab-btn:not(.active):hover { background: var(--cream-dark); color: var(--text); }
+
+  .tab-panel { display: none; }
+  .tab-panel.active { display: flex; flex-direction: column; gap: 16px; }
+
+  /* Cards */
+  .card {
+    background: var(--white);
+    border: 1px solid rgba(0,0,0,.07);
+    border-radius: var(--radius);
+    padding: 22px 24px;
+    box-shadow: 0 1px 8px rgba(0,0,0,.04);
+  }
+  .card h3 { font-size: 14px; font-weight: 500; color: var(--text); margin-bottom: 16px; }
+  .card-label { font-size: 11px; text-transform: uppercase; letter-spacing: .1em; color: var(--text-light); margin-bottom: 6px; }
+
+  .score-row { margin-bottom: 14px; }
+  .score-meta { display: flex; justify-content: space-between; margin-bottom: 5px; }
+  .score-meta span { font-size: 13px; color: var(--text-mid); }
+  .score-meta strong { font-size: 13px; font-weight: 500; }
+  .score-track { background: var(--cream-dark); border-radius: 99px; height: 7px; }
+  .score-fill { border-radius: 99px; height: 7px; transition: width 1.2s cubic-bezier(.25,.46,.45,.94); }
+
+  .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .stat-card {
+    background: var(--cream);
+    border-radius: var(--radius-sm);
+    padding: 16px;
+  }
+  .stat-label { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--text-light); margin-bottom: 6px; }
+  .stat-val { font-size: 16px; font-weight: 500; font-family: 'Cormorant Garamond', serif; }
+
+  /* Character cards */
+  .char-primary-card {
+    border-radius: var(--radius);
+    padding: 22px 24px;
+    margin-bottom: 0;
+    border: 1px solid;
+  }
+  .char-avatar {
+    width: 48px; height: 48px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; font-weight: 600;
+    flex-shrink: 0;
+    font-family: 'Cormorant Garamond', serif;
+  }
+  .char-row {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(0,0,0,.06);
+  }
+  .char-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .char-row:first-child { padding-top: 0; }
+  .char-name { font-size: 14px; font-weight: 500; margin-bottom: 3px; }
+  .char-desc { font-size: 13px; color: var(--text-mid); line-height: 1.55; }
+
+  .verse-card {
+    border-left: 3px solid;
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    padding: 14px 18px;
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--text-mid);
+  }
+
+  .check-item { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 12px; }
+  .check-item:last-child { margin-bottom: 0; }
+  .check-dot {
+    width: 22px; height: 22px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; flex-shrink: 0; margin-top: 1px;
+  }
+  .check-text { font-size: 14px; color: var(--text-mid); line-height: 1.55; }
+
+  .tip-item { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 14px; }
+  .tip-item:last-child { margin-bottom: 0; }
+  .tip-num { font-weight: 500; font-size: 14px; flex-shrink: 0; min-width: 20px; }
+  .tip-text { font-size: 14px; color: var(--text-mid); line-height: 1.55; }
+
+  .epiphanies-quote {
+    background: var(--navy-light);
+    border-radius: var(--radius-sm);
+    padding: 14px 18px;
+    font-style: italic;
+    font-size: 13px;
+    color: var(--navy-mid);
+    line-height: 1.65;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 15px;
+  }
+
+  /* ── CHATBOT ── */
+  .chat-toggle {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    width: 58px; height: 58px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    font-size: 22px;
+    box-shadow: 0 4px 20px rgba(0,0,0,.2);
+    z-index: 200;
+    transition: transform .2s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .chat-toggle:hover { transform: scale(1.08); }
+
+  .chat-window {
+    position: fixed;
+    bottom: 100px;
+    right: 28px;
+    width: 340px;
+    height: 480px;
+    background: var(--white);
+    border: 1px solid rgba(0,0,0,.1);
+    border-radius: var(--radius);
+    display: none;
+    flex-direction: column;
+    z-index: 200;
+    box-shadow: 0 8px 40px rgba(0,0,0,.18);
+    overflow: hidden;
+  }
+  .chat-window.open { display: flex; }
+
+  .chat-head {
+    padding: 14px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .chat-head-title { color: #fff; font-weight: 500; font-size: 14px; }
+  .chat-head-sub { color: rgba(255,255,255,.7); font-size: 12px; margin-top: 2px; }
+  .chat-close-btn {
+    background: none; border: none; color: rgba(255,255,255,.8);
+    font-size: 18px; cursor: pointer; line-height: 1;
+  }
+
+  .chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .msg {
+    max-width: 87%;
+    padding: 9px 13px;
+    border-radius: 12px;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  .msg.bot { align-self: flex-start; background: var(--cream); color: var(--text); border-radius: 12px 12px 12px 4px; }
+  .msg.user { align-self: flex-end; color: #fff; border-radius: 12px 12px 4px 12px; }
+  .msg.thinking { color: var(--text-light); font-style: italic; }
+
+  .chat-input-row {
+    padding: 10px 12px;
+    border-top: 1px solid rgba(0,0,0,.07);
+    display: flex;
+    gap: 8px;
+  }
+  .chat-input {
+    flex: 1;
+    border: 1px solid rgba(0,0,0,.12);
+    border-radius: var(--radius-sm);
+    padding: 8px 12px;
+    font-size: 13px;
+    font-family: 'Inter', sans-serif;
+    outline: none;
+    background: var(--cream);
+    color: var(--text);
+  }
+  .chat-input:focus { border-color: var(--gold); }
+  .chat-send {
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 8px 14px;
+    font-size: 13px;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    color: #fff;
+    transition: opacity .15s;
+  }
+  .chat-send:hover { opacity: .85; }
+
+  /* ── FOOTER ── */
+  .results-footer {
+    padding: 16px 24px;
+    text-align: center;
+    border-top: 1px solid rgba(0,0,0,.06);
+    margin-top: 8px;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 540px) {
+    .feature-grid { grid-template-columns: 1fr; max-width: 300px; }
+    .stat-grid { grid-template-columns: 1fr; }
+    .chat-window { width: calc(100vw - 32px); right: 16px; }
+    .chat-toggle { right: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ════════════════ WELCOME ════════════════ -->
+<div id="welcome" class="screen active">
+  <nav class="topbar">
+    <span class="topbar-logo">✦ Kingdom Discovery</span>
+    <span class="topbar-sub">Based on Big Five / OCEAN Research</span>
+  </nav>
+  <div class="hero">
+    <div class="hero-symbol">✦</div>
+    <h1>Discover Your<br><span>Kingdom Personality</span></h1>
+    <p>A science-rooted, spiritually-grounded assessment that reveals how God has uniquely wired you — and connects your personality to biblical characters and your Five-Fold Ministry calling.</p>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="icon">📋</div>
+        <strong>40 Questions</strong>
+        <span>Based on the OCEAN / Big Five model</span>
+      </div>
+      <div class="feature-card">
+        <div class="icon">📖</div>
+        <strong>Biblical Match</strong>
+        <span>5 characters who share your wiring</span>
+      </div>
+      <div class="feature-card">
+        <div class="icon">🎯</div>
+        <strong>Ministry Calling</strong>
+        <span>Your Five-Fold gift in Ephesians 4</span>
+      </div>
+    </div>
+    <div class="verse-strip">"Before I formed you in the womb I knew you, before you were born I set you apart." — Jeremiah 1:5</div>
+    <button class="btn-primary" onclick="startTest()">Begin the Assessment →</button>
+  </div>
+</div>
+
+<!-- ════════════════ QUESTIONS ════════════════ -->
+<div id="questions" class="screen">
+  <nav class="topbar">
+    <span class="topbar-logo">✦ Kingdom Discovery</span>
+  </nav>
+  <div class="q-wrap">
+    <div class="progress-bar-wrap">
+      <div class="progress-meta">
+        <span id="q-counter">Question 1 of 40</span>
+        <span id="q-pct">0% complete</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+    </div>
+    <div class="q-dim-label" id="q-dim-label">Openness / Vision</div>
+    <div class="q-card"><div class="q-text" id="q-text">Question goes here</div></div>
+    <div class="options-grid" id="options-grid"></div>
+    <button class="back-btn" id="back-btn" onclick="goBack()" style="display:none">← Previous question</button>
+  </div>
+</div>
+
+<!-- ════════════════ RESULTS ════════════════ -->
+<div id="results" class="screen">
+  <nav class="topbar">
+    <span class="topbar-logo">✦ Kingdom Discovery</span>
+  </nav>
+  <div class="results-wrap">
+    <div class="profile-hero" id="profile-hero">
+      <span class="profile-emoji" id="p-emoji"></span>
+      <div class="profile-label" id="p-label">Your Personality Type</div>
+      <div class="profile-name" id="p-name"></div>
+      <div class="profile-desc" id="p-desc"></div>
+    </div>
+
+    <div class="meta-chips">
+      <div class="chip">🎯 <strong id="p-ministry-chip"></strong></div>
+      <div class="chip">📖 <strong id="p-char-chip"></strong></div>
+    </div>
+
+    <div class="tabs" id="tabs-row"></div>
+
+    <!-- Overview Tab -->
+    <div class="tab-panel active" id="tab-overview">
+      <div class="card">
+        <h3>Your Personality Profile</h3>
+        <div id="score-bars"></div>
+      </div>
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-label">Five-Fold Calling</div>
+          <div class="stat-val" id="stat-ministry"></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Primary Biblical Model</div>
+          <div class="stat-val" id="stat-char"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Biblical Characters Tab -->
+    <div class="tab-panel" id="tab-character">
+      <div class="char-primary-card" id="char-primary-card">
+        <div style="display:flex;gap:14px;align-items:center;margin-bottom:16px">
+          <div class="char-avatar" id="char-avatar"></div>
+          <div>
+            <div class="card-label">Primary Character</div>
+            <div style="font-size:18px;font-weight:500;font-family:'Cormorant Garamond',serif" id="char-primary-name"></div>
+          </div>
+        </div>
+        <div id="char-primary-desc" style="font-size:14px;color:var(--text-mid);line-height:1.7;margin-bottom:16px"></div>
+        <div class="verse-card" id="char-verse"></div>
+      </div>
+      <div class="card">
+        <h3>All your biblical character matches</h3>
+        <div id="char-list"></div>
+      </div>
+    </div>
+
+    <!-- Ministry Tab -->
+    <div class="tab-panel" id="tab-ministry">
+      <div class="card">
+        <div class="card-label">Your Five-Fold Ministry Calling</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:600;margin:6px 0 12px" id="ministry-title"></div>
+        <p style="font-size:14px;color:var(--text-mid);line-height:1.75" id="ministry-desc"></p>
+      </div>
+      <div class="card">
+        <h3>Your Key Strengths</h3>
+        <div id="strengths-list"></div>
+      </div>
+      <div class="epiphanies-quote">"It was he who gave some to be apostles, some to be prophets, some to be evangelists, and some to be pastors and teachers, to equip his people for works of service." — Ephesians 4:11–12</div>
+    </div>
+
+    <!-- Growth Tab -->
+    <div class="tab-panel" id="tab-growth">
+      <div class="card">
+        <h3>Areas for Growth</h3>
+        <div id="growth-list"></div>
+      </div>
+      <div class="card">
+        <h3>Practical Next Steps</h3>
+        <div id="tips-list"></div>
+      </div>
+    </div>
+
+    <div class="results-footer">
+      <button class="btn-secondary" onclick="retake()">↩ Retake Assessment</button>
+    </div>
+  </div>
+
+  <!-- Chatbot -->
+  <button class="chat-toggle" id="chat-toggle" onclick="toggleChat()">💬</button>
+  <div class="chat-window" id="chat-window">
+    <div class="chat-head" id="chat-head">
+      <div>
+        <div class="chat-head-title">Spiritual Coach</div>
+        <div class="chat-head-sub" id="chat-head-sub">Ask about your results</div>
+      </div>
+      <button class="chat-close-btn" onclick="toggleChat()">✕</button>
+    </div>
+    <div class="chat-messages" id="chat-messages"></div>
+    <div class="chat-input-row">
+      <input class="chat-input" id="chat-input" placeholder="Ask a question..." onkeydown="if(event.key==='Enter')sendChat()">
+      <button class="chat-send" id="chat-send" onclick="sendChat()">→</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const QUESTIONS = [
+  {id:1,dim:"O",text:"I am drawn to new ideas, visions, and exploring deep spiritual questions."},
+  {id:2,dim:"C",text:"I keep my commitments and follow through on what I say I will do."},
+  {id:3,dim:"E",text:"I feel energized after spending time with groups of people."},
+  {id:4,dim:"A",text:"I am sensitive to the feelings and needs of those around me."},
+  {id:5,dim:"N",text:"I feel deeply moved during worship, prayer, or moments of spiritual encounter."},
+  {id:6,dim:"O",text:"I find beauty in art, music, poetry, and metaphor as ways to understand truth."},
+  {id:7,dim:"C",text:"I prefer to have a clear plan and structure before starting something new."},
+  {id:8,dim:"E",text:"I naturally draw people into conversations and love sharing my faith with strangers."},
+  {id:9,dim:"A",text:"I prefer to resolve conflict gently and prioritize harmony in relationships."},
+  {id:10,dim:"N",text:"I often sense when something is spiritually off in a situation before others do."},
+  {id:11,dim:"O",text:"I often see connections between seemingly unrelated ideas or Scripture passages."},
+  {id:12,dim:"C",text:"I am disciplined in my personal Bible study and prayer life."},
+  {id:13,dim:"E",text:"I am comfortable speaking, preaching, or leading in front of others."},
+  {id:14,dim:"A",text:"I find it easy to forgive those who have wronged me."},
+  {id:15,dim:"N",text:"I process my faith deeply through journaling, reflection, or creative expression."},
+  {id:16,dim:"O",text:"I am often inspired by prophetic words, dreams, or symbolic revelation."},
+  {id:17,dim:"C",text:"I value accuracy and pay close attention to details in everything I do."},
+  {id:18,dim:"E",text:"I feel alive in social settings and often take initiative in groups."},
+  {id:19,dim:"A",text:"I often put others' needs before my own and find joy in serving."},
+  {id:20,dim:"N",text:"I am deeply affected by the suffering of others around me."},
+  {id:21,dim:"O",text:"I have a vivid imagination and enjoy thinking about what could be possible."},
+  {id:22,dim:"C",text:"I work hard to ensure that what I do is done with excellence."},
+  {id:23,dim:"E",text:"People naturally come to me for direction and I enjoy leading others."},
+  {id:24,dim:"A",text:"I feel a deep love and compassion for hurting and broken people."},
+  {id:25,dim:"N",text:"I experience deep highs and lows in my spiritual journey and inner life."},
+  {id:26,dim:"O",text:"I am drawn to unconventional approaches and think outside traditional boundaries."},
+  {id:27,dim:"C",text:"I feel unsettled when my environment or responsibilities are disorganized."},
+  {id:28,dim:"E",text:"I often think about how to reach more people for the Kingdom of God."},
+  {id:29,dim:"A",text:"People often come to me for comfort, counsel, and emotional support."},
+  {id:30,dim:"N",text:"I sense injustice strongly and feel compelled to pray or act against it."},
+  {id:31,dim:"O",text:"I am comfortable sitting with mystery and unanswered questions in my faith."},
+  {id:32,dim:"C",text:"I take my spiritual and ministry responsibilities seriously and rarely cut corners."},
+  {id:33,dim:"E",text:"I feel most alive when I am sharing the Gospel or inviting people to faith."},
+  {id:34,dim:"A",text:"I see potential and the best in people, even when others have given up on them."},
+  {id:35,dim:"N",text:"My emotional depth is a significant part of how I connect with and worship God."},
+  {id:36,dim:"O",text:"I am often the person in a room who sees the 'bigger picture' or long-term vision."},
+  {id:37,dim:"C",text:"I value structure, clear doctrine, and guidelines in ministry and life."},
+  {id:38,dim:"E",text:"I love creating environments where people can connect, belong, and encounter God."},
+  {id:39,dim:"A",text:"I am committed to walking with people through long seasons of growth and struggle."},
+  {id:40,dim:"N",text:"I carry a strong burden for intercession and spend significant time in deep prayer."},
+];
+
+const DIMS = {O:"Openness / Vision",C:"Conscientiousness / Truth",E:"Extraversion / Boldness",A:"Agreeableness / Love",N:"Sensitivity / Prayer"};
+const DIM_COLORS = {O:"#7c3aed",C:"#0e7490",E:"#b45309",A:"#15803d",N:"#be185d"};
+const LABELS = ["Strongly Disagree","Disagree","Neutral","Agree","Strongly Agree"];
+
+const PROFILES = {
+  OE:{type:"The Apostolic Pioneer",emoji:"🌍",color:"#7c3aed",light:"#ede9fe",primaryChar:"Paul of Tarsus",
+    chars:[
+      {name:"Paul of Tarsus",desc:"Visionary theologian and bold missionary pioneer who crossed cultural boundaries with the Gospel and planted churches across the known world."},
+      {name:"Abraham",desc:"Left everything comfortable to pursue a vision only God could see, becoming the father of faith for all nations through radical obedience."},
+      {name:"Joshua",desc:"Led God's people into uncharted, hostile territory with prophetic courage and Spirit-given military strategy."},
+      {name:"Deborah",desc:"A prophetess and judge who boldly led Israel militarily and spiritually at a critical moment when no one else would rise up."},
+      {name:"Isaiah",desc:"Carried sweeping visions of God's redemptive plan across time and proclaimed them with fearless eloquence to kings and commoners alike."},
+    ],
+    ministry:"Apostle",
+    ministryDesc:"You are called to pioneer, plant, and build. The apostolic ministry crosses cultural and geographical boundaries, establishes Kingdom culture in new places, and brings order and vision to emerging works of God. Apostles are sent ones — and you were made to be sent.",
+    verse:"Isaiah 6:8 — 'Then I heard the voice of the Lord saying, \"Whom shall I send? And who will go for us?\" And I said, \"Here am I. Send me!\"'",
+    strengths:["Visionary leadership and bold initiative","Cross-cultural and boundary-crossing courage","Synthesizing theology into compelling vision","Ability to inspire and mobilize others","Seeing the strategic big picture of the Kingdom"],
+    growth:["Slowing down to nurture people, not just projects","Embracing the wisdom of collaboration over solo ventures","Processing emotions rather than pushing through them","Finishing what you start before beginning something new"],
+    tips:["Study the Book of Acts and Paul's missionary journeys as your primary model","Find an apostolic network or movement to run with and be accountable to","Write out a personal vision statement and revisit it quarterly","Develop a trusted inner circle for accountability and honest counsel","Read biographies of missionary pioneers like William Carey, Hudson Taylor, and Amy Carmichael"],
+    description:"You are a bold pioneer wired to take the Kingdom into uncharted territory. Vision and action flow naturally together in you — you don't just dream, you move. Like Paul, who went from city to city planting churches and crossing cultural barriers, you are most alive at the frontier. You carry both prophetic imagination and the practical drive to execute it. You were made to go first."
+  },
+  OC:{type:"The Prophetic Architect",emoji:"🏛️",color:"#0e7490",light:"#e0f7fa",primaryChar:"Daniel",
+    chars:[
+      {name:"Daniel",desc:"Combined prophetic revelation with disciplined excellence, serving God faithfully in a hostile foreign empire for over 70 years without compromise."},
+      {name:"Solomon",desc:"Received extraordinary divine wisdom and channeled it into building structures — physical, relational, and spiritual — of breathtaking depth and beauty."},
+      {name:"Ezekiel",desc:"A visionary prophet who received some of the most complex symbolic revelation in Scripture and communicated it with meticulous, architectural precision."},
+      {name:"Nehemiah",desc:"Received a God-given vision for rebuilding Jerusalem and executed it with detailed strategic planning, disciplined leadership, and unwavering prayer."},
+      {name:"John the Revelator",desc:"Received the most architecturally detailed prophetic vision in all of Scripture and recorded it with extraordinary precision and care on Patmos."},
+    ],
+    ministry:"Prophet / Teacher",
+    ministryDesc:"You are called to receive revelation from God and build durable systems, structures, and teachings around what you receive. You bridge the mystical and the methodical — seeing what God is building and then constructing the framework that holds it together for generations.",
+    verse:"Daniel 2:22 — 'He reveals deep and hidden things; he knows what lies in darkness, and light dwells with him.'",
+    strengths:["Receiving and interpreting deep spiritual revelation","Building orderly systems around prophetic insight","Long-term strategic thinking grounded in Scripture","Holding vision and discipline in creative tension","Spiritual wisdom in complex or hostile environments"],
+    growth:["Releasing perfectionism when God calls for speed over polish","Opening up emotionally — wisdom without warmth can feel cold to others","Trusting people enough to truly delegate vision and execution","Allowing spontaneity and the unexpected movement of the Holy Spirit"],
+    tips:["Keep a structured prophetic journal — write dreams, visions, impressions, and study the patterns over months","Study Daniel, Ezekiel, and Revelation with a specific focus on their structural frameworks","Develop curricula, frameworks, or systems around the revelation you receive from God","Seek environments that equally honor intellect and spiritual experience","Read N.T. Wright on Kingdom theology and Dallas Willard on spiritual formation"],
+    description:"You are rare — a person who hears from God deeply and can build something lasting around what they receive. Like Daniel who thrived in Babylon because his prophetic gift was matched by disciplined excellence, you don't just see the future — you help build it. Your greatest contribution to the Body of Christ is creating durable structures — teachings, systems, movements — around the revelation of God."
+  },
+  OA:{type:"The Prophetic Shepherd",emoji:"✨",color:"#0891b2",light:"#cffafe",primaryChar:"John the Beloved",
+    chars:[
+      {name:"John the Beloved",desc:"The disciple Jesus loved most deeply, who received the Revelation on Patmos and whose writings are the most spiritually intimate in all the New Testament."},
+      {name:"Hosea",desc:"A prophet whose entire life became a living parable of God's relentless, covenant love — vision and compassion were completely inseparable in him."},
+      {name:"Mary of Bethany",desc:"Chose the 'better part' — sitting at Jesus's feet absorbing revelation — and responded with extravagant prophetic worship at the cost of social approval."},
+      {name:"Joseph (son of Jacob)",desc:"His prophetic dreams were matched by a merciful, forgiving heart that ultimately chose reconciling love over retaliation when he had every right to revenge."},
+      {name:"Samuel",desc:"Heard God's voice with extraordinary clarity from childhood and led the nation with gentle spiritual authority, always oriented toward the welfare of God's people."},
+    ],
+    ministry:"Prophet / Pastor",
+    ministryDesc:"You carry revelation for the sake of relationship. You see what God sees in people — their true identity and destiny — and you call it forth with extraordinary tenderness. Your prophetic gift is inherently pastoral: you use what you see to heal, encourage, and restore.",
+    verse:"1 John 4:7 — 'Dear friends, let us love one another, for love comes from God. Everyone who loves has been born of God and knows God.'",
+    strengths:["Receiving prophetic insight wrapped in pastoral sensitivity","Speaking truth in deeply compassionate ways","Creating spaces where people feel truly seen and loved by God","Deep spiritual intimacy and personal encounter with Jesus","Calling forth identity and destiny in others through personal prophecy"],
+    growth:["Setting clear boundaries so deep compassion doesn't lead to burnout","Speaking hard prophetic truth when love genuinely requires it","Not internalizing the pain of others to a damaging or destabilizing degree","Balancing intimacy with God with active engagement in the broken world outside"],
+    tips:["Study John's Gospel, Epistles, and Revelation as your primary spiritual model","Develop personal prophecy as a regular ministry practice — practice speaking over people","Learn about sozo ministry, inner healing prayer, and prophetic counseling","Create a rhythm of deep personal worship combined with Scripture meditation each day","Study Christian mystics: Teresa of Ávila, Julian of Norwich, Thomas à Kempis, and Brennan Manning"],
+    description:"You are a rare and beautiful combination — a seer who loves. Like John who leaned on Jesus's chest at the Last Supper and also wrote 'God is love,' you receive revelation in the context of deep intimacy. You use what you see to shepherd people toward their true identity in God. You don't prophesy to impress — you prophesy to heal. People feel safe around you because your spiritual insight is always wrapped in kindness."
+  },
+  ON:{type:"The Weeping Prophet",emoji:"💎",color:"#6d28d9",light:"#f5f3ff",primaryChar:"Jeremiah",
+    chars:[
+      {name:"Jeremiah",desc:"Called to speak God's word in the darkest of times, feeling every rejection and heartbreak deeply while refusing to stop — the fire in his bones was stronger than his fear."},
+      {name:"Elijah",desc:"One of Scripture's most powerful prophets, whose breathtaking spiritual highs and crushing lows revealed a man with extraordinary sensitivity to God's movements and grievances."},
+      {name:"David",desc:"Poet, warrior, and worshipper whose 150 Psalms pour out the full and unfiltered depth of human and spiritual emotion before a God who receives all of it."},
+      {name:"Anna the Prophetess",desc:"Spent decades in the temple in prayer and fasting, developing such extraordinary spiritual sensitivity that she recognized the infant Messiah at first sight."},
+      {name:"Ezekiel",desc:"God's watchman, called to feel the weight of his prophetic assignments in his body and emotions — lying on his side, eating siege bread, and weeping over visions."},
+    ],
+    ministry:"Prophet / Intercessor",
+    ministryDesc:"You are a watchman and a voice. You feel what God feels about His people and the world, and your prayers and proclamations carry that holy weight. Your emotional depth is not your weakness — it is your prophetic fuel and your most sacred Kingdom asset.",
+    verse:"Jeremiah 20:9 — 'His word is in my heart like a fire, a fire shut up in my bones. I am weary of holding it in; indeed, I cannot.'",
+    strengths:["Carrying God's own heart for broken people and broken situations","Deep, sustained intercessory prayer and holy burden-bearing","Creative expression of spiritual truth through art, writing, poetry, and music","Discerning what is spiritually wrong before others perceive it","Faithfulness and continuance in seasons of rejection or invisibility"],
+    growth:["Managing emotional weight without being crushed or paralyzed by it","Building resilience through genuine community and consistent accountability","Not allowing spiritual sensitivity to quietly become chronic isolation","Learning that your prophetic calling does not require your ongoing emotional suffering"],
+    tips:["Study and pray the Psalms as both a devotional and therapeutic practice — write your own","Seek a mature spiritual director or prophetic mentor who understands your wiring","Build regular rhythms of solitude, nature, and spiritual decompression into each week","Study Jeremiah and Elijah deeply — including their moments of breakdown and God's tender restoration","Explore contemplative prayer: Lectio Divina, centering prayer, and the Prayer of Examen"],
+    description:"You are a rare depth-carrier — someone who feels the things of God with extraordinary intensity. Like Jeremiah who wept over Jerusalem and could not stop prophesying even when it cost him everything, you carry a holy fire and a holy grief simultaneously. Your emotional sensitivity is not instability — it is prophetic intelligence. The world desperately needs people who feel what others have numbed themselves to. You are one of them."
+  },
+  CE:{type:"The Apostolic Builder",emoji:"⚒️",color:"#b45309",light:"#fef3c7",primaryChar:"Nehemiah",
+    chars:[
+      {name:"Nehemiah",desc:"Organized an entire displaced nation to rebuild Jerusalem's walls in just 52 days through prayer-soaked leadership, precise planning, and bold confrontation of opposition."},
+      {name:"Joshua",desc:"A military leader of extraordinary discipline and courage who executed God's battle strategy with precision and led millions into their God-given inheritance."},
+      {name:"Peter (later ministry)",desc:"Transformed from impulsive, unstable fisherman into a structurally bold leader who built the early church with apostolic authority and pastoral wisdom."},
+      {name:"Priscilla & Aquila",desc:"Built both a tent-making business and an international church-planting network, consistently and quietly equipping leaders like Apollos wherever they went."},
+      {name:"Titus",desc:"Paul's most trusted builder-leader, repeatedly sent to establish order, appoint elders, and bring structural health to chaotic and troubled young churches."},
+    ],
+    ministry:"Apostle / Teacher",
+    ministryDesc:"You are a Kingdom builder — someone who receives God's vision and executes it with both boldness and precision. You lead people not merely by inspiration but through concrete strategy, clear structure, and personal example. You build things that last.",
+    verse:"Nehemiah 2:18 — 'I also told them about the gracious hand of my God on me... They replied, \"Let us start rebuilding.\" So they began this good work.'",
+    strengths:["Turning prophetic vision into concrete, executable plans","Inspiring and organizing groups of people to work together toward a shared goal","Discipline, consistency, and remarkable follow-through on commitments","Bold leadership under pressure, criticism, and sustained opposition","Establishing healthy systems and order in growing ministry contexts"],
+    growth:["Slowing down to listen deeply before building rapidly","Investing in emotional and relational depth, not just organizational efficiency","Creating space for creativity and Spirit-led detours that interrupt your plans","Learning to receive care, support, and ministry from others without deflecting it"],
+    tips:["Study Nehemiah's prayer life — he prayed before every single major decision and conversation","Develop project management and organizational leadership skills intentionally and systematically","Build a strong leadership team and learn to delegate with genuine trust","Study the apostolic methods of the early church through Acts and Paul's letters","Read Patrick Lencioni on organizational health and Gordon MacDonald on inner leadership renewal"],
+    description:"You are a builder who actually gets things done. You don't merely dream — you draw up the plans, gather the crew, and lay the first stone yourself. Like Nehemiah who went from royal cupbearer to construction foreman to regional governor, you carry both the boldness to lead and the precision to execute well. You are most alive when you have a clear goal, a motivated team, and the freedom to build without bureaucratic interference."
+  },
+  CA:{type:"The Faithful Teacher",emoji:"📜",color:"#15803d",light:"#dcfce7",primaryChar:"Timothy",
+    chars:[
+      {name:"Timothy",desc:"A gentle, faithful pastor-teacher who guarded sound doctrine while caring deeply and personally for the spiritual health of the churches entrusted to him by Paul."},
+      {name:"Luke the Physician",desc:"Researched and documented the Gospel and Acts of the Apostles with meticulous scholarly care, motivated equally by deep love for people and commitment to truth."},
+      {name:"Ezra the Scribe",desc:"Devoted himself entirely to studying God's Law, then living it personally before teaching it — his life was the curriculum before he opened his mouth."},
+      {name:"Aquila",desc:"A tent-maker and teacher who, with his wife Priscilla, mentored the brilliant but incomplete Apollos and built up believers consistently in every city they inhabited."},
+      {name:"Mary of Nazareth",desc:"Pondered the Word and works of God in her heart with extraordinary faithfulness over decades, modeling a life of quiet, obedient theological reflection."},
+    ],
+    ministry:"Teacher / Pastor",
+    ministryDesc:"You are a faithful steward of God's Word with a shepherd's heart. You don't merely teach doctrine in the abstract — you care profoundly about whether divine truth lands in the hearts of real people and actually transforms their daily lives over time.",
+    verse:"2 Timothy 2:2 — 'And the things you have heard me say in the presence of many witnesses entrust to reliable people who will also be qualified to teach others.'",
+    strengths:["Combining theological depth with genuine personal warmth","Long-term discipleship and faithful, patient mentoring relationships","Accuracy in handling Scripture with pastoral care for the person receiving it","Reliability, trustworthiness, and consistent personal integrity","Creating learning environments where people feel simultaneously challenged and safe"],
+    growth:["Speaking up boldly when your conviction requires difficult courage","Not shrinking from necessary confrontation out of conflict avoidance","Avoiding over-caution that quietly suffocates necessary risk-taking in faith","Ensuring your deep love of structure doesn't inadvertently quench the Spirit's spontaneous movement"],
+    tips:["Invest in 2-3 specific people through deep, intentional multi-year discipleship","Study hermeneutics, biblical theology, and church history to sharpen your teaching","Create a personal curriculum of truth that you live authentically before you teach it publicly","Build regular feedback loops with those you teach to ensure the truth is landing and working","Read Eugene Peterson's The Message, Henri Nouwen on spiritual direction, and Howard Hendricks on teaching to change lives"],
+    description:"You are the kind of person the Body of Christ desperately needs — someone who loves people enough to teach them truth, and loves truth enough to ensure people can genuinely receive it. Like Timothy, who was simultaneously a pastor and a lifelong student, you combine faithfulness in doctrine with tenderness of heart. People trust you deeply because you consistently model what you teach. Your greatest gift is long-term spiritual transformation, one faithful relationship at a time."
+  },
+  CN:{type:"The Priestly Watchman",emoji:"🕯️",color:"#7e22ce",light:"#faf5ff",primaryChar:"Ezra",
+    chars:[
+      {name:"Ezra",desc:"A priest and scribe who combined meticulous faithfulness to God's Law with seasons of deep, public, weeping intercession over the moral failure of his people."},
+      {name:"Aaron",desc:"Israel's high priest who carried the names of the twelve tribes on his breastplate — literally bearing the people before God with careful ritual precision and a burning heart."},
+      {name:"Zechariah (father of John)",desc:"A priest whose decades of faithful, structured service before God led unexpectedly to one of the most dramatic prophetic breakthroughs in all of Scripture."},
+      {name:"Anna the Prophetess",desc:"Served God in the temple with structured fasting and prayer for 84 years, developing such extraordinary spiritual sensitivity that she recognized the Messiah instantly."},
+      {name:"Hezekiah",desc:"A king who combined intense personal devotion, systematic spiritual discipline, and desperate prayer to bring national spiritual reformation and miraculous military deliverance."},
+    ],
+    ministry:"Teacher / Intercessor",
+    ministryDesc:"You carry the spirit of the priesthood — faithful guardians of sacred truth who also weep and intercede over the spiritual state of God's people. You hold up the standard of truth with one hand while holding people before God in prayer with the other.",
+    verse:"Ezra 9:5 — 'Then, at the evening sacrifice, I rose from my self-abasement, with my tunic and cloak torn, and fell on my knees with my hands spread out to the LORD my God.'",
+    strengths:["Deep personal prayer life combined with doctrinal grounding and theological clarity","Guardianship of sacred truth and the spiritual legacy of the community","Sensitivity to the spiritual state of congregations, families, and movements","Faithful, unseen service that sustains spiritual life over long, quiet seasons","Carrying significant spiritual weight with grace and endurance over time"],
+    growth:["Stepping out of behind-the-scenes roles when God's call requires public visibility","Learning to communicate your rich interior world to trusted people around you","Balancing the heavy weight of spiritual sensitivity with genuine joy, rest, and play","Resisting the isolation that can quietly grow from both introversion and spiritual intensity"],
+    tips:["Develop a structured daily prayer liturgy — fixed-hour prayer, the Daily Office, or the Anglican morning prayer tradition","Study the Psalms and the priestly portions of Leviticus and Hebrews as your primary texts","Find or build an intercessory prayer community where your gift is understood and exercised","Keep a detailed record of prayer requests and their answers to build your personal faith history","Read Richard Foster's Celebration of Discipline and Andrew Murray's With Christ in the School of Prayer"],
+    description:"You are a guardian and a priest — someone whose faithfulness to God's Word and deep prayer life make you a pillar that others may never fully see but always feel the effect of. Like Ezra who studied the Law by day and wept in intercession by night, your interior world is extraordinarily rich and your faithfulness is a remarkable gift to the Body. You may not always be in the spotlight — but the Kingdom advances because you are in the prayer closet."
+  },
+  EA:{type:"The Evangelistic Shepherd",emoji:"🌾",color:"#16a34a",light:"#f0fdf4",primaryChar:"Barnabas",
+    chars:[
+      {name:"Barnabas",desc:"The great Son of Encouragement who championed both Paul and John Mark when others had written them off, creating space for people that the rest of the church had abandoned."},
+      {name:"Andrew",desc:"Always bringing specific people to Jesus — his brother Peter, a boy with five loaves, seeking Greeks — relational connection to Jesus was his entire ministry."},
+      {name:"Philip the Evangelist",desc:"Ran without hesitation to share the Gospel with the Ethiopian eunuch, and cultivated a family culture of evangelism evidenced by his four prophesying daughters."},
+      {name:"Lydia",desc:"A businesswoman of means whose open heart became open doors — the first European church was built in her home through the seamless fusion of hospitality and evangelism."},
+      {name:"Cornelius",desc:"A Roman centurion whose consistent generosity and prayer so moved heaven that God sent Peter specifically to bring him and his entire household into the Kingdom."},
+    ],
+    ministry:"Evangelist / Pastor",
+    ministryDesc:"You bring people in and then walk with them for the long journey. You have both the fire to reach the lost and the warmth to make them feel genuinely at home in the Kingdom. For you, harvest and community are not separate things — they belong together in your hands.",
+    verse:"Luke 15:5 — 'And when he finds it, he joyfully puts it on his shoulders and goes home. Then he calls his friends and neighbors together and says, \"Rejoice with me; I have found my lost sheep.\"'",
+    strengths:["Creating instant warmth and genuine welcome for new and hurting people","Seeing and authentically calling out the best in every person you encounter","Bridging the cultural gap between the institutional church and the unchurched world","Building community that is genuinely life-giving and practically impossible to leave","Motivating and mobilizing ministry teams with contagious, joyful energy"],
+    growth:["Not spreading yourself too thin across too many simultaneous relationships","Developing deeper theological roots to anchor your powerful relational gifting","Learning to confront lovingly when genuine care for someone requires a difficult conversation","Consistently guarding your own spiritual tank when you are giving constantly to others"],
+    tips:["Develop a 'persons of peace' strategy — pray consistently for 5 specific unsaved people in your daily life","Learn how to facilitate genuinely transformational community and small group environments","Study Jesus's model of personal, deeply relational ministry through the four Gospels","Create a culture of invitation in every sphere you inhabit — make bringing others feel natural and normal","Read Randy Newman on conversational evangelism and Tim Chester on everyday mission and ordinary hospitality"],
+    description:"You are the kind of person that makes people feel like they have known you forever within the first five minutes of meeting — and then you lead them to Jesus. Like Barnabas who was a Son of Encouragement and a tireless builder of people, you seamlessly combine the fire of the evangelist with the warmth of the shepherd. People don't merely hear the Gospel from you — they experience it in how you treat them. Your life is the sermon."
+  },
+  EN:{type:"The Prophetic Evangelist",emoji:"⚡",color:"#dc2626",light:"#fef2f2",primaryChar:"Elijah",
+    chars:[
+      {name:"Elijah",desc:"One of the most electrically powerful prophets in Scripture — confronting 450 prophets on Carmel with total confidence, then collapsing in the desert needing an angel to cook for him."},
+      {name:"Peter (early ministry)",desc:"Preached at Pentecost with the kind of Spirit-anointed fire that cut people to the heart — he felt the weight of every word and every soul in the crowd."},
+      {name:"John the Baptist",desc:"Prepared the way with searing intensity and completely uncompromising proclamation — described by Jesus himself as a burning and shining lamp in his generation."},
+      {name:"Amos",desc:"A simple shepherd-farmer turned preacher whose passionate, unpolished cry for justice and righteousness shook comfortable, complacent religion to its core."},
+      {name:"Apollos",desc:"Preached Jesus with such remarkable fervor, eloquence, and spiritual authority that entire communities were visibly transformed by his passionate proclamation."},
+    ],
+    ministry:"Evangelist / Prophet",
+    ministryDesc:"You are a voice crying in the wilderness — bold, passionate, and deeply feeling. You don't merely announce the Gospel as information; you carry its urgency and weight in your very body. Your presence shifts spiritual atmospheres before you ever open your mouth to speak.",
+    verse:"John 5:35 — 'John was a lamp that burned and gave light, and you chose for a time to enjoy his light.'",
+    strengths:["Preaching and proclaiming with fire, conviction, and anointed authority","Carrying a compelling spiritual authority that commands attention in public settings","Moving in signs, wonders, and demonstrations of the Holy Spirit's power","Feeling the deep heart of God for the lost and speaking it with urgency and courage","Breaking spiritual resistance through sustained prayer and bold proclamation"],
+    growth:["Managing your intensity so you don't burn out yourself and those closest to you","Developing pastoral patience to walk alongside people beyond the initial moment of encounter","Processing the emotional valleys and dark nights that almost always follow spiritual mountain-top experiences","Building sustainable structure, team, and community around your prophetic evangelism ministry"],
+    tips:["Study the lives of John Wesley, Charles Finney, Reinhard Bonnke, and Kathryn Kuhlman as your primary models","Develop a strong, committed prayer base and intercessory team to undergird your public ministry","Learn to rest, eat well, and recover intentionally and non-negotiably between seasons of high ministry output","Study power evangelism, healing ministry, and the prophetic — Randy Clark and Bill Johnson are excellent resources","Build a genuine team — your calling and gifting were never designed to be carried alone for the long haul"],
+    description:"You are a spiritual lightning rod — intense, bold, and feeling everything at profound depth. Like Elijah who called down fire on Mount Carmel and then collapsed in spiritual exhaustion under a broom tree in the desert, you carry both extraordinary supernatural authority and profound personal vulnerability. You feel everything. Your proclamation is never performance — it is pure overflow from an encounter with God. The Kingdom urgently needs your fire."
+  },
+  AN:{type:"The Intercessory Pastor",emoji:"🕊️",color:"#be185d",light:"#fdf2f8",primaryChar:"Hannah",
+    chars:[
+      {name:"Hannah",desc:"Prayed with such desperate, passionate depth at Shiloh that the priest Eli assumed she was drunk — and God opened her womb and changed the trajectory of a nation through her son."},
+      {name:"Mary, Mother of Jesus",desc:"Pondered all things quietly in her heart, said yes to an impossible calling at extraordinary personal cost, and stood at the foot of the cross when nearly everyone else had fled."},
+      {name:"David (in the Psalms)",desc:"Poured out his love, grief, doubt, triumph, and intercession before God with breathtaking emotional transparency across 150 Psalms that still carry healing power today."},
+      {name:"Dorcas (Tabitha)",desc:"Her entire ministry was compassionate, practical service to widows and the poor — she was so deeply loved that her death brought an entire community to their knees before Peter."},
+      {name:"Epaphras",desc:"Paul describes him as always wrestling in prayer for the churches — an unseen, unnamed champion of intercessory love whose labor moved heaven on behalf of communities he served."},
+    ],
+    ministry:"Pastor / Intercessor",
+    ministryDesc:"You carry people in your heart before you ever carry them in your arms. Prayer is the engine that powers your pastoral care. You love with extraordinary depth and you intercede with tenacious persistence — and more often than not, you are doing both simultaneously for the exact same people.",
+    verse:"Colossians 4:12 — 'Epaphras, who is one of you and a servant of Christ Jesus, sends greetings. He is always wrestling in prayer for you, that you may stand firm in all the will of God, mature and fully assured.'",
+    strengths:["Deep, specific, and sustained intercessory prayer for individuals and communities","Loving people faithfully through long, difficult, seemingly unchanging seasons without giving up","Extraordinary sensitivity to the spiritual and emotional needs of those in your care","Creating an atmosphere of genuine safety, healing, and belonging wherever you minister","Interceding specifically and persistently until breakthrough finally arrives"],
+    growth:["Establishing clear spiritual and emotional boundaries to prevent chronic exhaustion and depletion","Not absorbing others' pain to a degree that consistently immobilizes your own spirit and calling","Stepping into public leadership or visibility roles when God specifically calls you forward","Learning to receive care, prayer, and ministry from others — not only to give it to everyone else"],
+    tips:["Develop a specific, organized prayer list and pray consistently and persistently for those in your care","Study inner healing ministry, pastoral care best practices, and trauma-informed approaches to helping people","Learn the principles of spiritual warfare as they specifically relate to sustained pastoral intercession","Build non-negotiable personal rhythms of solitude, rest, and spiritual renewal to sustain your giving over time","Read Henri Nouwen's The Wounded Healer, Leanne Payne's The Healing Presence, and Gary Thomas on authentic faith"],
+    description:"You are a prayer warrior with a pastor's heart — someone who loves people so completely and so deeply that you carry them before God long before you speak a single word to them. Like Hannah, whose prayer was the turning point for an entire nation, and Epaphras, who wrestled in prayer for whole churches he loved, your love and your intercession are the same thing expressed in two different directions. People may never fully know what you do for them behind closed doors. But heaven knows — and so does their spirit."
+  }
+};
+
+// ── State ──
+let currentQ = 0;
+let answers = [];
+let currentProfile = null;
+let chatHistory = [];
+let chatOpen = false;
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function startTest() {
+  currentQ = 0;
+  answers = [];
+  showScreen('questions');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = QUESTIONS[currentQ];
+  const pct = Math.round((currentQ / QUESTIONS.length) * 100);
+  document.getElementById('q-counter').textContent = `Question ${currentQ+1} of ${QUESTIONS.length}`;
+  document.getElementById('q-pct').textContent = `${pct}% complete`;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('q-dim-label').textContent = DIMS[q.dim];
+  document.getElementById('q-text').textContent = q.text;
+  document.getElementById('back-btn').style.display = currentQ > 0 ? 'block' : 'none';
+
+  const grid = document.getElementById('options-grid');
+  grid.innerHTML = '';
+  LABELS.forEach((label, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.innerHTML = `<span class="opt-num">${i+1}</span>${label}`;
+    btn.onclick = () => selectAnswer(i+1);
+    grid.appendChild(btn);
+  });
+}
+
+function selectAnswer(val) {
+  answers[currentQ] = { dim: QUESTIONS[currentQ].dim, val };
+  currentQ++;
+  if (currentQ >= QUESTIONS.length) {
+    showResults();
+  } else {
+    renderQuestion();
+  }
+}
+
+function goBack() {
+  if (currentQ > 0) { currentQ--; renderQuestion(); }
+}
+
+function calcScores() {
+  const totals = {O:[],C:[],E:[],A:[],N:[]};
+  answers.forEach(a => totals[a.dim].push(a.val));
+  const avg = {};
+  Object.entries(totals).forEach(([k,v]) => { avg[k] = v.reduce((a,b)=>a+b,0)/v.length; });
+  return avg;
+}
+
+function showResults() {
+  const scores = calcScores();
+  const sorted = Object.entries(scores).sort((a,b)=>b[1]-a[1]);
+  const combo = [sorted[0][0], sorted[1][0]].sort().join('');
+  currentProfile = PROFILES[combo] || PROFILES[Object.keys(PROFILES)[0]];
+
+  renderResults(scores);
+  showScreen('results');
+
+  // init chat
+  chatHistory = [];
+  const chatBox = document.getElementById('chat-messages');
+  chatBox.innerHTML = '';
+  addChatMsg('bot', `Hi! I'm your Spiritual Coach. You've been identified as <strong>${currentProfile.type}</strong>. Ask me anything about your results, your biblical characters, your Five-Fold calling, or how to grow in your gifting!`);
+
+  const toggle = document.getElementById('chat-toggle');
+  const send = document.getElementById('chat-send');
+  toggle.style.background = currentProfile.color;
+  send.style.background = currentProfile.color;
+  document.getElementById('chat-head').style.background = currentProfile.color;
+  document.getElementById('chat-head-sub').textContent = `Ask about your ${currentProfile.type} results`;
+}
+
+function renderResults(scores) {
+  const p = currentProfile;
+
+  // Hero
+  const hero = document.getElementById('profile-hero');
+  hero.style.background = p.light;
+  hero.style.borderLeftColor = p.color;
+  document.getElementById('p-emoji').textContent = p.emoji;
+  document.getElementById('p-label').style.color = p.color;
+  document.getElementById('p-name').textContent = p.type;
+  document.getElementById('p-name').style.color = p.color;
+  document.getElementById('p-desc').textContent = p.description;
+
+  // Chips
+  document.getElementById('p-ministry-chip').textContent = p.ministry;
+  document.getElementById('p-char-chip').textContent = p.primaryChar;
+  document.getElementById('stat-ministry').textContent = p.ministry;
+  document.getElementById('stat-char').textContent = p.primaryChar;
+
+  // Tabs
+  const tabsRow = document.getElementById('tabs-row');
+  tabsRow.innerHTML = '';
+  [['overview','Overview'],['character','Biblical Characters'],['ministry','Five-Fold Ministry'],['growth','Growth Plan']].forEach(([key,label]) => {
+    const btn = document.createElement('button');
+    btn.className = 'tab-btn' + (key==='overview' ? ' active' : '');
+    btn.textContent = label;
+    btn.style.setProperty('--tab-active-bg', p.color);
+    btn.onclick = () => switchTab(key);
+    if (key==='overview') btn.style.background = p.color;
+    tabsRow.appendChild(btn);
+  });
+
+  // Score bars
+  const barsDiv = document.getElementById('score-bars');
+  barsDiv.innerHTML = '';
+  Object.entries(DIMS).forEach(([k,label]) => {
+    const pct = Math.round((scores[k]/5)*100);
+    barsDiv.innerHTML += `
+      <div class="score-row">
+        <div class="score-meta"><span>${label}</span><strong style="color:${DIM_COLORS[k]}">${pct}%</strong></div>
+        <div class="score-track"><div class="score-fill" style="width:0%;background:${DIM_COLORS[k]}" data-w="${pct}"></div></div>
+      </div>`;
+  });
+  setTimeout(() => {
+    document.querySelectorAll('.score-fill').forEach(el => { el.style.width = el.dataset.w + '%'; });
+  }, 100);
+
+  // Characters tab
+  const primaryCard = document.getElementById('char-primary-card');
+  primaryCard.style.background = p.light;
+  primaryCard.style.borderColor = p.color + '50';
+  const avatar = document.getElementById('char-avatar');
+  avatar.style.background = p.color;
+  avatar.style.color = '#fff';
+  avatar.textContent = p.primaryChar[0];
+  document.getElementById('char-primary-name').textContent = p.primaryChar;
+  const primaryData = p.chars.find(c=>c.name===p.primaryChar);
+  document.getElementById('char-primary-desc').textContent = primaryData?.desc || '';
+  const verseEl = document.getElementById('char-verse');
+  verseEl.textContent = p.verse;
+  verseEl.style.borderLeftColor = p.color;
+  verseEl.style.background = p.light;
+
+  const charList = document.getElementById('char-list');
+  charList.innerHTML = '';
+  p.chars.forEach(c => {
+    charList.innerHTML += `
+      <div class="char-row">
+        <div class="char-avatar" style="background:${p.light};color:${p.color}">${c.name[0]}</div>
+        <div><div class="char-name">${c.name}</div><div class="char-desc">${c.desc}</div></div>
+      </div>`;
+  });
+
+  // Ministry tab
+  document.getElementById('ministry-title').textContent = p.ministry;
+  document.getElementById('ministry-title').style.color = p.color;
+  document.getElementById('ministry-desc').textContent = p.ministryDesc;
+  const strengthsList = document.getElementById('strengths-list');
+  strengthsList.innerHTML = '';
+  p.strengths.forEach(s => {
+    strengthsList.innerHTML += `
+      <div class="check-item">
+        <div class="check-dot" style="background:${p.light};color:${p.color}">✓</div>
+        <div class="check-text">${s}</div>
+      </div>`;
+  });
+
+  // Growth tab
+  const growthList = document.getElementById('growth-list');
+  growthList.innerHTML = '';
+  p.growth.forEach(g => {
+    growthList.innerHTML += `
+      <div class="check-item">
+        <div class="check-dot" style="background:#fef3c7;color:#b45309">→</div>
+        <div class="check-text">${g}</div>
+      </div>`;
+  });
+  const tipsList = document.getElementById('tips-list');
+  tipsList.innerHTML = '';
+  p.tips.forEach((tip, i) => {
+    tipsList.innerHTML += `
+      <div class="tip-item">
+        <div class="tip-num" style="color:${p.color}">${i+1}.</div>
+        <div class="tip-text">${tip}</div>
+      </div>`;
+  });
+}
+
+function switchTab(key) {
+  document.querySelectorAll('.tab-btn').forEach(b => {
+    b.classList.remove('active');
+    b.style.background = '';
+  });
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  const activeBtn = Array.from(document.querySelectorAll('.tab-btn')).find(b => b.textContent.toLowerCase().startsWith(key==='character'?'biblical':key));
+  if(activeBtn) { activeBtn.classList.add('active'); activeBtn.style.background = currentProfile.color; }
+  const panel = document.getElementById('tab-'+key);
+  if(panel) panel.classList.add('active');
+}
+
+function retake() {
+  chatOpen = false;
+  document.getElementById('chat-window').classList.remove('open');
+  startTest();
+  showScreen('welcome');
+}
+
+// ── CHATBOT ──
+function toggleChat() {
+  chatOpen = !chatOpen;
+  document.getElementById('chat-window').classList.toggle('open', chatOpen);
+  if(chatOpen) document.getElementById('chat-input').focus();
+}
+
+function addChatMsg(role, html) {
+  const box = document.getElementById('chat-messages');
+  const msg = document.createElement('div');
+  msg.className = 'msg ' + role;
+  if(role==='user') msg.style.background = currentProfile?.color || '#333';
+  msg.innerHTML = html;
+  box.appendChild(msg);
+  box.scrollTop = box.scrollHeight;
+  return msg;
+}
+
+async function sendChat() {
+  const input = document.getElementById('chat-input');
+  const text = input.value.trim();
+  if(!text) return;
+  input.value = '';
+  addChatMsg('user', text);
+  chatHistory.push({role:'user', content: text});
+
+  const thinking = addChatMsg('bot thinking', '...');
+
+  const p = currentProfile;
+  const system = `You are a wise, warm, and encouraging Christian personality coach helping someone understand their spiritual personality assessment results.
+Their profile: ${p.type}. Primary biblical character: ${p.primaryChar}. Five-Fold Ministry calling: ${p.ministry}.
+Profile description: ${p.description}
+Biblical characters who share this personality: ${p.chars.map(c=>c.name+' — '+c.desc).join('; ')}.
+Strengths: ${p.strengths.join(', ')}.
+Growth areas: ${p.growth.join(', ')}.
+Practical tips: ${p.tips.join('; ')}.
+Answer questions warmly, with biblical depth, practical wisdom, and encouragement. Reference Scripture naturally. Keep answers to 2-3 paragraphs. Use encouraging, accessible language.`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system,
+        messages: chatHistory
+      })
+    });
+    const data = await res.json();
+    const reply = data.content?.find(b=>b.type==='text')?.text || "I'm sorry, I couldn't get a response right now. Please try again.";
+    chatHistory.push({role:'assistant', content: reply});
+    thinking.className = 'msg bot';
+    thinking.textContent = reply;
+  } catch {
+    thinking.className = 'msg bot';
+    thinking.textContent = 'Something went wrong. Please try again!';
+  }
+
+  document.getElementById('chat-messages').scrollTop = 9999;
+}
+</script>
+</body>
+</html>
